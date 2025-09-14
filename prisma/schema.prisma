@@ -12,3 +12,19 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id              Int      @id @default(autoincrement())
+
+  email           String   @unique
+  hashedPassword  String   // 해시된 비밀번호 저장 (bcrypt 사용)
+
+  nickName        String?  @unique
+
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  isAdmin        Boolean  @default(false)
+
+  @@map("users")
+}
