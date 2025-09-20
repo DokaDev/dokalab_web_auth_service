@@ -1,0 +1,25 @@
+# docker compose up -d
+services:
+  dokalab_web_auth_service:
+    build: .
+    container_name: dokalab_web_auth_service
+    ports:
+      - "3001:3000"
+    networks:
+      - dokalab_blog_network
+      - dokalab_personal_web_network
+    env_file:
+      - .env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  dokalab_blog_network:
+    external: true
+  dokalab_personal_web_network:
+    external: true
