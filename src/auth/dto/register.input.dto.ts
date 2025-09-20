@@ -1,0 +1,13 @@
+import 'reflect-metadata';
+import { InputType, Field } from '@nestjs/graphql';
+@InputType()
+export class RegisterInputDto {
+  @Field(() => String)
+  email: string;
+
+  @Field(() => String)
+  password: string;
+
+  @Field(() => String)
+  nickname: string;
+}

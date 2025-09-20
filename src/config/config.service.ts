@@ -10,10 +10,10 @@ export const { TypedConfigService, TypedConfigModule } = createTypedConfig({
   REDIS_PORT: Joi.number().default(6379),
   JWT_SECRET: Joi.string()
     .min(32)
-    .default('your_jwt_secret_key_here')
-    .required(),
-  JWT_ACCESS_TOKEN_EXPIRATION: Joi.string().default('15m'), // Access Token 짧게
-  JWT_REFRESH_TOKEN_EXPIRATION: Joi.string().default('7d'), // Refresh Token 길게
+    .default('your_jwt_secret_key_here_at_least_32_characters_long_dev'),
+  // .required(),
+  JWT_ACCESS_TOKEN_EXPIRATION: Joi.string().default('1h'), // Access Token 1시간 (블로그 읽기 충분)
+  JWT_REFRESH_TOKEN_EXPIRATION: Joi.string().default('7d'), // Refresh Token 7일
 });
 
 export type TypedConfigService = InstanceType<typeof TypedConfigService>;

@@ -1,0 +1,43 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type SessionResponseDto {
+  accessToken: String!
+  refreshToken: String!
+}
+
+type CurrentUserDto {
+  id: Float!
+  nickname: String!
+  isAdmin: Boolean!
+  userInput: String
+}
+
+type UserDto {
+  id: Float!
+  email: String!
+  nickname: String!
+}
+
+type Query {
+  currentUser: CurrentUserDto
+  userById(id: Float!): UserDto
+  userByEmail(email: String!): UserDto
+}
+
+type Mutation {
+  login(loginInput: LoginInputDto!): SessionResponseDto!
+  register(registerInput: RegisterInputDto!): UserDto!
+}
+
+input LoginInputDto {
+  email: String!
+  password: String!
+}
+
+input RegisterInputDto {
+  email: String!
+  password: String!
+  nickname: String!
+}
