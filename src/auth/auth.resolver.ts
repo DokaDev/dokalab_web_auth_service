@@ -1,14 +1,13 @@
-import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Context, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { GraphQLError } from 'graphql';
 import { CurrentUserDto } from 'src/auth/dto/current-user.dto';
 import { AdminRequired } from 'src/context/decorators/admin-required.decorator';
 import { RequestContext } from 'src/context/request-context';
 import { AuthService } from './auth.service';
+import { SessionResponseDto } from './dto/jwt/login.response.dto';
 import { LoginInputDto } from './dto/login.input.dto';
 import { RegisterInputDto } from './dto/register.input.dto';
 import { UserDto } from './dto/user.dto';
-import { SessionResponseDto } from './dto/jwt/login.response.dto';
-import { RedisService } from 'src/adapter/redis/redis.service';
 
 @Resolver()
 export class AuthResolver {
@@ -71,22 +70,7 @@ export class AuthResolver {
         extensions: { code: 'FORBIDDEN' },
       });
     }
-
-    // TODO: 해당 사용자에게 활성화된 상태의 refresh token이 있는지 확인
-    // const userSessionKey: string = `refresh:userId:${user.id}`;
-    // const buf = await this.redisService.getBuffer(userSessionKey);
-    // if (buf) {
-    //   // 활성화된 세션이 이미 존재함
-    //   // TODO: 현재 해당 세션의 TTL을 현 시점을 기준으로 업데이트 후 액세스 토큰 발급
-    // } else {
-    //   // 활성화된 세션이 존재하지 않음
-
-    const jwt = await this.authService.generateJwtTokens(user);
-
-    // TODO: generate JWT access token and refresh token
-    // 리프레시 토큰은 redis에 ttl로 저장
-
-    return new SessionResponseDto();
+    return await this.authService.generateJwtTokens(user);
   }
 
   @Mutation(() => UserDto)
@@ -99,6 +83,22 @@ export class AuthResolver {
     return {
       ...registeredUser,
       nickname: registeredUser.nickName,
+    };
+  }
+
+  @Mutation(() => SessionResponseDto)
+  async refreshAccessToken(
+    @Args('userId', { type: () => Int }) userId: number,
+    @Args('refreshToken', { type: () => String }) refreshToken: string,
+  ): Promise<SessionResponseDto> {
+    const accessToken = await this.authService.refreshAccessToken(
+      userId,
+      refreshToken,
+    );
+
+    return {
+      accessToken,
+      refreshToken,
     };
   }
 }

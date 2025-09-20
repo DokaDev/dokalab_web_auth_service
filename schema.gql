@@ -2,16 +2,16 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type SessionResponseDto {
-  accessToken: String!
-  refreshToken: String!
-}
-
 type CurrentUserDto {
   id: Float!
   nickname: String!
   isAdmin: Boolean!
   userInput: String
+}
+
+type SessionResponseDto {
+  accessToken: String!
+  refreshToken: String!
 }
 
 type UserDto {
@@ -29,6 +29,7 @@ type Query {
 type Mutation {
   login(loginInput: LoginInputDto!): SessionResponseDto!
   register(registerInput: RegisterInputDto!): UserDto!
+  refreshAccessToken(userId: Int!, refreshToken: String!): SessionResponseDto!
 }
 
 input LoginInputDto {

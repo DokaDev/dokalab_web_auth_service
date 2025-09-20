@@ -13,7 +13,6 @@ export const { TypedConfigService, TypedConfigModule } = createTypedConfig({
     .default('your_jwt_secret_key_here_at_least_32_characters_long_dev'),
   // .required(),
   JWT_ACCESS_TOKEN_EXPIRATION: Joi.string().default('1h'), // Access Token 1시간 (블로그 읽기 충분)
-  JWT_REFRESH_TOKEN_EXPIRATION: Joi.string().default('7d'), // Refresh Token 7일
 });
 
 export type TypedConfigService = InstanceType<typeof TypedConfigService>;
