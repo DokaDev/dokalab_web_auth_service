@@ -116,4 +116,14 @@ export class AuthResolver {
   ): Promise<boolean> {
     return this.authService.revokeRefreshToken(userId, refreshToken);
   }
+
+  // master 위임
+  @Mutation(() => Boolean)
+  @AdminRequired()
+  async grantMasterRole(
+    @Args('userId', { type: () => Int }) userId: number,
+    @Context() context: RequestContext,
+  ): Promise<boolean> {
+    return await this.authService.grantMasterRole(context, userId);
+  }
 }

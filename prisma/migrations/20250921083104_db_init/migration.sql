@@ -13,11 +13,12 @@ CREATE TABLE "public"."users" (
 
 -- CreateTable
 CREATE TABLE "public"."master" (
+    "id" SERIAL NOT NULL,
     "user_id" INTEGER NOT NULL,
     "granted_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "revoked_at" TIMESTAMP(3),
 
-    CONSTRAINT "master_pkey" PRIMARY KEY ("user_id")
+    CONSTRAINT "master_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex

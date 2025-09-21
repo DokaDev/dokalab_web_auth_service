@@ -11,6 +11,7 @@ import { AccessTokenPayloadDto } from './dto/jwt/jwt.payload.dto';
 import { SessionResponseDto } from './dto/jwt/login.response.dto';
 import { RegisterInputDto } from './dto/register.input.dto';
 import { TypedConfigService } from 'src/config/config.service';
+import { RequestContext } from 'src/context/request-context';
 
 @Injectable()
 export class AuthService {
@@ -189,5 +190,25 @@ export class AuthService {
 
     const result = await this.redisService.del(sessionKey);
     return result > 0;
+  }
+
+  public async grantMasterRole(context: RequestContext, targetUserId: number) {
+    const requestingUser = context.currentUser;
+    if (!requestingUser || !requestingUser.isAdmin) {
+      throw new Error('Only admins can grant master roles.');
+    }
+
+    const targetUser = await this.findUserById(targetUserId);
+    if (!targetUser) {
+      throw new Error('Target user not found.');
+    }
+
+    await this.prismaService.$transaction(async (tx) => {
+      // 현재 사용자의 master 레코드 가져오기(가장 최근의 것)
+      const latestMasterRecord = await tx.master.findFirst({
+        where: { userId: requestingUser.id },
+        orderBy: { grantedAt: 'desc' },
+      });
+    });
   }
 }

@@ -32,11 +32,13 @@ model User {
 }
 
 model Master {
-  userId     Int       @id @map("user_id") @unique
+  id         Int       @id @default(autoincrement())
+
+  userId     Int       @map("user_id") @unique
   grantedAt  DateTime  @default(now()) @map("granted_at")
   revokedAt  DateTime? @map("revoked_at")
 
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("master")
 }
