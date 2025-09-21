@@ -8,7 +8,6 @@ import { SessionResponseDto } from './dto/jwt/login.response.dto';
 import { LoginInputDto } from './dto/login.input.dto';
 import { RegisterInputDto } from './dto/register.input.dto';
 import { UserDto } from './dto/user.dto';
-import { argsArgArrayOrObject } from 'rxjs/internal/util/argsArgArrayOrObject';
 
 @Resolver()
 export class AuthResolver {

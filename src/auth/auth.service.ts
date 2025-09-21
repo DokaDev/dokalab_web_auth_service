@@ -137,7 +137,9 @@ export class AuthService {
     const expiresIn = this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION');
 
     const payload: AccessTokenPayloadDto = {
-      ...user,
+      id: user.id,
+      email: user.email,
+      isAdmin: user.isAdmin,
       nickname: user.nickName,
     };
 
