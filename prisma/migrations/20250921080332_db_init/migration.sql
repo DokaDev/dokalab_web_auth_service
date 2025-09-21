@@ -3,7 +3,7 @@ CREATE TABLE "public"."users" (
     "id" SERIAL NOT NULL,
     "email" TEXT NOT NULL,
     "hashedPassword" TEXT NOT NULL,
-    "nickName" TEXT NOT NULL,
+    "nick_name" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "is_admin" BOOLEAN NOT NULL DEFAULT false,
@@ -24,7 +24,7 @@ CREATE TABLE "public"."master" (
 CREATE UNIQUE INDEX "users_email_key" ON "public"."users"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "users_nickName_key" ON "public"."users"("nickName");
+CREATE UNIQUE INDEX "users_nick_name_key" ON "public"."users"("nick_name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "master_user_id_key" ON "public"."master"("user_id");
