@@ -215,16 +215,22 @@ export class AuthService {
       }
 
       // targetUser에게 master 권한 부여
-      await tx.master.create({
+      const createResult = await tx.master.create({
         data: {
           userId: targetUserId,
         },
       });
+      if (!createResult) {
+        throw new Error('Failed to grant master role to target user.');
+      }
 
-      await tx.master.update({
+      const updateResult = await tx.master.update({
         where: { id: latestMasterRecord.id },
         data: { revokedAt: new Date() },
       });
+      if (!updateResult) {
+        throw new Error('Failed to revoke previous master role.');
+      }
     });
 
     return true;
