@@ -8,6 +8,7 @@ import { SessionResponseDto } from './dto/jwt/login.response.dto';
 import { LoginInputDto } from './dto/login.input.dto';
 import { RegisterInputDto } from './dto/register.input.dto';
 import { UserDto } from './dto/user.dto';
+import { argsArgArrayOrObject } from 'rxjs/internal/util/argsArgArrayOrObject';
 
 @Resolver()
 export class AuthResolver {
@@ -78,6 +79,13 @@ export class AuthResolver {
     @Args('registerInput', { type: () => RegisterInputDto })
     input: RegisterInputDto,
   ) {
+    const existingUser = await this.authService.findUserByEmail(input.email);
+    if (existingUser) {
+      throw new GraphQLError('Email already in use', {
+        extensions: { code: 'FORBIDDEN' },
+      });
+    }
+
     const registeredUser = await this.authService.createUser(input);
 
     return {
@@ -100,5 +108,13 @@ export class AuthResolver {
       accessToken,
       refreshToken,
     };
+  }
+
+  @Mutation(() => Boolean)
+  async logout(
+    @Args('userId', { type: () => Int }) userId: number,
+    @Args('refreshToken', { type: () => String }) refreshToken: string,
+  ): Promise<boolean> {
+    return this.authService.revokeRefreshToken(userId, refreshToken);
   }
 }

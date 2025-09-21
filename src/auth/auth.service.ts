@@ -66,54 +66,48 @@ export class AuthService {
    * @returns
    */
   public async generateJwtTokens(user: User): Promise<SessionResponseDto> {
-    const sessionKey = `user_refresh:${user.id}`;
+    const refreshToken = await this.generateRefreshToken(user);
+    const accessToken = await this.generateAccessToken(user);
+    return {
+      accessToken,
+      refreshToken,
+    };
+  }
 
-    // refresh token = session
-    const userSession = await this.redisService.get(sessionKey);
-
-    let sessionId: string;
-
-    if (!userSession) sessionId = generateUUID();
-    else sessionId = userSession.toString();
+  private async generateRefreshToken(user: User): Promise<string> {
+    const refreshTokenBody = generateUUID();
+    const sessionKey = `user_refresh:${user.id}:${refreshTokenBody}`;
 
     await this.redisService.setex(
       sessionKey,
       REFRESH_TOKEN_EXPIRATION,
-      sessionId,
+      refreshTokenBody,
     );
 
-    console.log('Generated Refresh Token:', sessionId);
-
-    const accessToken = await this.generateAccessToken(user);
-
-    console.log('Generated Access Token:', accessToken);
-
-    return {
-      accessToken,
-      refreshToken: sessionId,
-    };
+    return refreshTokenBody;
   }
 
   public async refreshAccessToken(
     userId: number,
     refreshToken: string,
   ): Promise<string> {
-    const sessionKey = `user_refresh:${userId}`;
+    const sessionKey = `user_refresh:${userId}:${refreshToken}`;
 
     // 세션 존재하는지 확인
     const userSession = await this.redisService.get(sessionKey);
 
     if (!userSession) {
-      throw new Error('No active session found. Please log in again.');
+      throw new Error('No active session found. Please log in again.'); // 세션 무효화된 경우 + 위조된 토큰이라 서버 내 세션키와 매칭되지 않는 경우
     } else {
       if (userSession !== refreshToken) {
-        throw new Error('Invalid refresh token. Please log in again.');
+        throw new Error('Invalid refresh token. Please log in again.'); // 사용자가 제시한 리프레시토큰과 리프레시토큰 내의 실제 body가 불일치한 경우
       }
       const user = await this.findUserById(userId);
       if (!user) {
         throw new Error('User not found. Please log in again.');
       }
 
+      // refresh token을 현 시점 기준으로 재연장
       await this.redisService.setex(
         sessionKey,
         REFRESH_TOKEN_EXPIRATION,
@@ -155,7 +149,7 @@ export class AuthService {
 
       const user = await this.findUserById(payload.id);
       if (!user) {
-        return null; // 로그인 문제 관련해서는 login guard에서 처리
+        return null; // 로그인 문제 관련해서는 login guard에서 처리 -> LoginRequired이거나 AdminRequired인 경우 context 내의 user가 null이면 에러 뱉는 상태
       }
 
       const currentUser: CurrentUserDto = {
@@ -169,5 +163,15 @@ export class AuthService {
     } catch {
       return null;
     }
+  }
+
+  public async revokeRefreshToken(
+    userId: number,
+    refreshToken: string,
+  ): Promise<boolean> {
+    const sessionKey = `user_refresh:${userId}:${refreshToken}`;
+
+    const result = await this.redisService.del(sessionKey);
+    return result > 0;
   }
 }
