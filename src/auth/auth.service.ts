@@ -47,7 +47,7 @@ export class AuthService {
 
     // master 테이블의 가장 최근 레코드 하나(created_at 기준 desc)를 뽑아서, 이게 null일 경우, 즉 마스터 유저가 없을 경우에만, isAdmin을 true로 주는 로직
     const latestMasterRecord = await this.prismaService.master.findFirst({
-      orderBy: { granted_at: 'desc' },
+      orderBy: { grantedAt: 'desc' },
     });
     const isFirstUser = !latestMasterRecord;
 
@@ -66,7 +66,7 @@ export class AuthService {
       // 최초 가입자라면 Master 테이블에도 레코드 추가
       await this.prismaService.master.create({
         data: {
-          user_id: user.id,
+          userId: user.id,
         },
       });
     }
