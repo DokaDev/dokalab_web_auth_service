@@ -45,6 +45,12 @@ export class AuthService {
   public async createUser(input: RegisterInputDto): Promise<User> {
     const { email, password, nickname } = input;
 
+    // master 테이블의 가장 최근 레코드 하나(created_at 기준 desc)를 뽑아서, 이게 null일 경우, 즉 마스터 유저가 없을 경우에만, isAdmin을 true로 주는 로직
+    const latestMasterRecord = await this.prismaService.master.findFirst({
+      orderBy: { granted_at: 'desc' },
+    });
+    const isFirstUser = !latestMasterRecord;
+
     // 10은 salt의 라운드 수
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -53,9 +59,17 @@ export class AuthService {
         email,
         nickName: nickname,
         hashedPassword,
-        isAdmin: false, // 기본적으로 일반 사용자로 생성
+        isAdmin: isFirstUser, // 최초 가입자에게만 관리자 권한 부여
       },
     });
+    if (isFirstUser) {
+      // 최초 가입자라면 Master 테이블에도 레코드 추가
+      await this.prismaService.master.create({
+        data: {
+          user_id: user.id,
+        },
+      });
+    }
 
     return user;
   }

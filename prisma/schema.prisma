@@ -26,5 +26,17 @@ model User {
 
   isAdmin        Boolean  @default(false) @map("is_admin")
 
+  master         Master?  // 선택적 관계 (마스터가 아닐 수도 있음)
+
   @@map("users")
+}
+
+model Master {
+  user_id     Int       @id @map("user_id") @unique
+  granted_at  DateTime  @default(now()) @map("granted_at")
+  revoked_at  DateTime? @map("revoked_at")
+
+  user        User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("masters")
 }
