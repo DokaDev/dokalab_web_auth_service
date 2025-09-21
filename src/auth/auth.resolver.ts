@@ -21,7 +21,7 @@ export class AuthResolver {
   @AdminRequired()
   @Query(() => UserDto, { nullable: true })
   async userById(
-    @Args('id', { type: () => Number }) id: number,
+    @Args('id', { type: () => Int }) id: number,
   ): Promise<UserDto | null> {
     const user = await this.authService.findUserById(id);
     if (!user) {

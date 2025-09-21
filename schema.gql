@@ -15,14 +15,14 @@ type SessionResponseDto {
 }
 
 type UserDto {
-  id: Float!
+  id: Int!
   email: String!
   nickname: String!
 }
 
 type Query {
   currentUser: CurrentUserDto
-  userById(id: Float!): UserDto
+  userById(id: Int!): UserDto
   userByEmail(email: String!): UserDto
 }
 
@@ -30,6 +30,8 @@ type Mutation {
   login(loginInput: LoginInputDto!): SessionResponseDto!
   register(registerInput: RegisterInputDto!): UserDto!
   refreshAccessToken(userId: Int!, refreshToken: String!): SessionResponseDto!
+  logout(userId: Int!, refreshToken: String!): Boolean!
+  grantMasterRole(userId: Int!): Boolean!
 }
 
 input LoginInputDto {
