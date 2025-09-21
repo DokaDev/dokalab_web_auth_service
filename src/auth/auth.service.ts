@@ -226,5 +226,7 @@ export class AuthService {
         data: { revokedAt: new Date() },
       });
     });
+
+    return true;
   }
 }
