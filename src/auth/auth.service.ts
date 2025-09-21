@@ -209,6 +209,22 @@ export class AuthService {
         where: { userId: requestingUser.id },
         orderBy: { grantedAt: 'desc' },
       });
+
+      if (!latestMasterRecord) {
+        throw new Error('Requesting user is not a master.');
+      }
+
+      // targetUser에게 master 권한 부여
+      await tx.master.create({
+        data: {
+          userId: targetUserId,
+        },
+      });
+
+      await tx.master.update({
+        where: { id: latestMasterRecord.id },
+        data: { revokedAt: new Date() },
+      });
     });
   }
 }
