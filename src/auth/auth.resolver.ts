@@ -18,11 +18,6 @@ export class AuthResolver {
     return context.currentUser;
   }
 
-  @Query(() => Boolean)
-  testQuery() {
-    return true;
-  }
-
   @AdminRequired()
   @Query(() => UserDto, { nullable: true })
   async userById(
