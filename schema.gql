@@ -22,6 +22,7 @@ type UserDto {
 
 type Query {
   currentUser: CurrentUserDto
+  testQuery: Boolean!
   userById(id: Int!): UserDto
   userByEmail(email: String!): UserDto
 }
